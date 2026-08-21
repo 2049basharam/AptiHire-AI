@@ -1,26 +1,45 @@
 {
-  "name": "talentos-temp",
+  "name": "talentos",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "next lint",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
-    "next": "16.3.1",
-    "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "@google/genai": "^2.18.0",
+    "bullmq": "^5.8.5",
+    "drizzle-orm": "^0.33.0",
+    "ioredis": "^5.4.1",
+    "jose": "^5.6.3",
+    "mammoth": "^1.12.1",
+    "next": "15.1.11",
+    "pdf-parse": "^2.4.5",
+    "pg": "^8.12.0",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.3.1",
-    "tailwindcss": "^4",
-    "typescript": "^5"
+    "@playwright/test": "^1.46.1",
+    "@types/node": "^22.5.4",
+    "@types/pdf-parse": "^1.1.5",
+    "@types/pg": "^8.11.8",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "drizzle-kit": "^0.24.2",
+    "eslint": "^9.9.1",
+    "eslint-config-next": "15.1.11",
+    "typescript": "^5.5.4",
+    "vitest": "^2.0.5"
   }
 }
