@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { SearchIcon, BriefcaseIcon, SparklesIcon, HelpIcon, AlertTriangleIcon } from '@/components/icons';
+import { SearchIcon, BriefcaseIcon, SparklesIcon, HelpIcon } from '@/components/icons';
 
 interface CandidateResult {
   candidate: {
