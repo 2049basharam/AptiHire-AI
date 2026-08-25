@@ -124,6 +124,39 @@ export function startVerificationWorker() {
   return verificationWorker;
 }
 
+export async function parseResumeToText(fileBuffer: Buffer, mimeType: string): Promise<string> {
+  let text = '';
+  if (mimeType === 'application/pdf') {
+    if (fileBuffer.toString().includes('This is a mock resume text')) {
+      text = fileBuffer.toString();
+    } else if (fileBuffer.toString().includes('short')) {
+      text = 'short';
+    } else {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const pdfLib = require('pdf-parse');
+      const PDFParseClass = pdfLib.PDFParse || pdfLib;
+      const parserInstance = new PDFParseClass(new Uint8Array(fileBuffer));
+      const parsed = await parserInstance.getText();
+      text = parsed.text || '';
+    }
+  } else if (mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const mammothLib = require('mammoth');
+    const mammothParser = typeof mammothLib === 'object' && mammothLib.default ? mammothLib.default : mammothLib;
+    const parsed = await mammothParser.extractRawText({ buffer: fileBuffer });
+    text = parsed.value;
+  } else {
+    throw new Error(`Unsupported resume MIME type: ${mimeType}`);
+  }
+
+  // Validate text length (Scanned PDF/Corrupted resume check)
+  if (!text || text.trim().length < 100) {
+    throw new Error('Scanned/image-only PDF could not be text-extracted; OCR is required.');
+  }
+
+  return text;
+}
+
 export async function processCandidateResumeDirectly(data: { candidateId: string; organizationId: string; storageKey: string; mimeType: string }) {
   const { candidateId, organizationId, storageKey, mimeType } = data;
   const reqId = crypto.randomUUID();
@@ -136,50 +169,35 @@ export async function processCandidateResumeDirectly(data: { candidateId: string
       .set({ status: 'PROCESSING', updatedAt: new Date() })
       .where(eq(candidates.id, candidateId));
 
-    // 2. Fetch file from private storage
-    const storage = getStorage();
-    const fileBuffer = await storage.downloadFile(storageKey);
+    // 2. Fetch raw text from database (populated by Vercel on upload)
+    const doc = await db.query.candidateDocuments.findFirst({
+      where: eq(candidateDocuments.candidateId, candidateId),
+    });
 
-    // 3. Extract text content
-    let text = '';
-    if (mimeType === 'application/pdf') {
-      if (fileBuffer.toString().includes('This is a mock resume text')) {
-        text = fileBuffer.toString();
-      } else if (fileBuffer.toString().includes('short')) {
-        text = 'short';
-      } else {
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        const pdfLib = require('pdf-parse');
-        const PDFParseClass = pdfLib.PDFParse || pdfLib;
-        const parserInstance = new PDFParseClass(new Uint8Array(fileBuffer));
-        const parsed = await parserInstance.getText();
-        text = parsed.text || '';
-      }
-    } else if (mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const mammothLib = require('mammoth');
-      const mammothParser = typeof mammothLib === 'object' && mammothLib.default ? mammothLib.default : mammothLib;
-      const parsed = await mammothParser.extractRawText({ buffer: fileBuffer });
-      text = parsed.value;
-    } else {
-      throw new Error(`Unsupported resume MIME type: ${mimeType}`);
+    if (!doc) {
+      throw new Error(`Candidate document metadata not found for candidate: ${candidateId}`);
     }
 
-    // 4. Validate text length (Scanned PDF/Corrupted resume check)
-    if (!text || text.trim().length < 100) {
-      throw new Error('Scanned/image-only PDF could not be text-extracted; OCR is required.');
+    let text = doc.rawText;
+
+    // Fallback: If rawText is not parsed yet, parse it now (only if file exists in local storage)
+    if (!text || text.trim().length === 0) {
+      logger.info(`Fallback: Downloading and parsing file from local storage: ${storageKey}`, reqId);
+      const storage = getStorage();
+      const fileBuffer = await storage.downloadFile(storageKey);
+      text = await parseResumeToText(fileBuffer, mimeType);
+      
+      await db.update(candidateDocuments)
+        .set({ rawText: text })
+        .where(eq(candidateDocuments.candidateId, candidateId));
     }
 
-    // 5. Save raw text and transition to AI_PROCESSING
-    await db.update(candidateDocuments)
-      .set({ rawText: text })
-      .where(eq(candidateDocuments.candidateId, candidateId));
-
+    // 3. Transition to AI_PROCESSING
     await db.update(candidates)
       .set({ status: 'AI_PROCESSING', updatedAt: new Date() })
       .where(eq(candidates.id, candidateId));
 
-    // 6. Invoke AIProvider for structured parsing & evidence tracking
+    // 4. Invoke AIProvider for structured parsing & evidence tracking
     const aiProvider = getAIProvider();
     if (!aiProvider) {
       throw new Error('AI Provider is not configured');
@@ -187,7 +205,7 @@ export async function processCandidateResumeDirectly(data: { candidateId: string
 
     const extracted = await aiProvider.extractCandidateProfile(text);
 
-    // 7. Save candidate profile and evidence (Idempotent clean + insert transaction)
+    // 5. Save candidate profile and evidence (Idempotent clean + insert transaction)
     await db.transaction(async (tx) => {
       await tx.delete(candidateProfiles).where(eq(candidateProfiles.candidateId, candidateId));
       await tx.delete(candidateEvidence).where(eq(candidateEvidence.candidateId, candidateId));
@@ -201,17 +219,17 @@ export async function processCandidateResumeDirectly(data: { candidateId: string
         skills: extracted.skills.map(s => s.name),
       });
 
-      const doc = await tx.query.candidateDocuments.findFirst({
+      const currentDoc = await tx.query.candidateDocuments.findFirst({
         where: eq(candidateDocuments.candidateId, candidateId),
       });
 
-      if (doc) {
+      if (currentDoc) {
         for (const skill of extracted.skills) {
           await tx.insert(candidateEvidence).values({
             candidateId,
             organizationId,
             skill: skill.name,
-            sourceDocumentId: doc.id,
+            sourceDocumentId: currentDoc.id,
             excerpt: skill.excerpt,
             page: null,
           });

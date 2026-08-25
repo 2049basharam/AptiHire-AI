@@ -169,12 +169,29 @@ export async function POST(request: Request) {
 
     const mimeType = signatureCheck.mimeType;
 
-    // 9. Write file to secure storage
+    // 9. Extract raw text from resume in API route directly
+    let rawText = '';
+    try {
+      const { parseResumeToText } = require('@/services/queue');
+      rawText = await parseResumeToText(fileBuffer, mimeType);
+    } catch (parseError: any) {
+      logger.error('Failed to parse resume text in API route', reqId, { error: parseError.message });
+      return NextResponse.json(
+        { error: { code: 'VALIDATION_ERROR', message: parseError.message || 'Failed to extract text from resume.' } },
+        { status: 400 }
+      );
+    }
+
+    // 10. Write file to secure storage (non-blocking, fallback for local files)
     const secureKey = `${crypto.randomUUID()}${fileExt}`;
     const storage = getStorage();
-    await storage.uploadFile(secureKey, fileBuffer, mimeType);
+    try {
+      await storage.uploadFile(secureKey, fileBuffer, mimeType);
+    } catch (storageError: any) {
+      logger.warn('Storage upload failed (non-fatal)', reqId, { error: storageError.message });
+    }
 
-    // 10. Execute database transaction: Candidate + Document metadata + Audit Log
+    // 11. Execute database transaction: Candidate + Document metadata + Audit Log
     const newCandidate = await db.transaction(async (tx) => {
       const [insertedCandidate] = await tx.insert(candidates).values({
         organizationId: orgId,
@@ -188,7 +205,7 @@ export async function POST(request: Request) {
         fileSize: file.size,
         mimeType,
         storageKey: secureKey,
-        rawText: '', // raw text gets populated by background workers
+        rawText, // Pre-populated text for Render workers
       });
 
       await tx.insert(auditLogs).values({
