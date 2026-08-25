@@ -15,8 +15,11 @@ export class LocalStorageAdapter implements FileStorage {
   private baseDir: string;
 
   constructor() {
-    // Save files in the private 'storage/resumes/' folder in the repository root
-    this.baseDir = path.join(process.cwd(), 'storage', 'resumes');
+    // Use writable /tmp directory in Vercel/Serverless environments, otherwise local storage/resumes folder
+    const isServerless = Boolean(process.env.VERCEL) || process.env.NODE_ENV === 'production';
+    this.baseDir = isServerless
+      ? path.join('/tmp', 'resumes')
+      : path.join(process.cwd(), 'storage', 'resumes');
     this.ensureDirectoryExists();
   }
 
