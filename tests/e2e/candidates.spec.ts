@@ -131,10 +131,12 @@ test.describe('Real E2E Candidate Ingestion & Resume Intelligence Validation', (
     await page.fill('#email', 'recruiter.corrupt@example.com');
     await page.fill('#password', 'PasswordA123!');
     await page.click('button[type="submit"]');
+    await page.waitForURL(/\/login/);
 
     await page.fill('#email', 'recruiter.corrupt@example.com');
     await page.fill('#password', 'PasswordA123!');
     await page.click('button[type="submit"]');
+    await page.waitForURL(/\/onboarding/);
 
     await page.fill('#orgName', 'Ingest Org Corrupt');
     await page.click('button[type="submit"]');

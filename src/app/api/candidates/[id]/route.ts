@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
-import { db, candidates, candidateProfiles, candidateDocuments, candidateEvidence, auditLogs, memberships, eq, and } from '@/db';
+import { db, candidates, candidateProfiles, candidateDocuments, candidateEvidence, auditLogs, memberships, candidateStatusHistory, eq, and } from '@/db';
 import { getCurrentUserId, requireRole } from '@/lib/rbac';
 import { verifyCSRF } from '@/lib/csrf';
 import { logger } from '@/lib/logger';
-import { UpdateProfileSchema } from '@/lib/validations/candidate';
+import { createNotificationForOrgRecruiters } from '@/lib/notifications';
+import { UpdateProfileSchema, isValidCandidateTransition } from '@/lib/validations/candidate';
 
 export const dynamic = 'force-dynamic';
 
@@ -157,6 +158,23 @@ export async function PATCH(
 
     const payload = result.data;
 
+    // Concurrency check and transition validation
+    if (payload.status !== undefined) {
+      if (payload.expectedPreviousStatus !== undefined && existingCandidate.status !== payload.expectedPreviousStatus) {
+        return NextResponse.json(
+          { error: { code: 'CONFLICT', message: `Candidate status has changed. Expected status: '${payload.expectedPreviousStatus}', but actual status is '${existingCandidate.status}'.` } },
+          { status: 409 }
+        );
+      }
+
+      if (!isValidCandidateTransition(existingCandidate.status, payload.status)) {
+        return NextResponse.json(
+          { error: { code: 'INVALID_TRANSITION', message: `Invalid status transition from '${existingCandidate.status}' to '${payload.status}'.` } },
+          { status: 400 }
+        );
+      }
+    }
+
     // 7. Update profile details in database transaction
     await db.transaction(async (tx) => {
       // Update core candidate fields (firstName, lastName, email, phone)
@@ -165,10 +183,36 @@ export async function PATCH(
       if (payload.lastName !== undefined) candidateUpdates.lastName = payload.lastName;
       if (payload.email !== undefined) candidateUpdates.email = payload.email;
       if (payload.phone !== undefined) candidateUpdates.phone = payload.phone;
+      if (payload.status !== undefined) candidateUpdates.status = payload.status;
 
       await tx.update(candidates)
         .set(candidateUpdates)
         .where(eq(candidates.id, id));
+
+      // If status transitioned, record status history log
+      if (payload.status !== undefined && payload.status !== existingCandidate.status) {
+        await tx.insert(candidateStatusHistory).values({
+          organizationId: orgId,
+          candidateId: id,
+          jobId: payload.jobId || null,
+          previousStatus: existingCandidate.status,
+          newStatus: payload.status,
+          actorUserId: userId,
+          reason: payload.reason || null,
+          notes: payload.notes || null,
+        });
+
+        // Trigger in-app notification for org recruiters
+        await createNotificationForOrgRecruiters({
+          organizationId: orgId,
+          actorUserId: userId,
+          title: `Candidate Status Updated: ${existingCandidate.firstName} ${existingCandidate.lastName}`,
+          message: `Candidate moved from ${existingCandidate.status} to ${payload.status}`,
+          type: `CANDIDATE_${payload.status}`,
+          entityId: id,
+          entityType: 'CANDIDATE',
+        });
+      }
 
       // Update candidate profile fields
       const profile = await tx.query.candidateProfiles.findFirst({

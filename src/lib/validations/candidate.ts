@@ -8,6 +8,13 @@ export const CandidateStatusSchema = z.enum([
   'AI_PROCESSING',
   'REVIEW_REQUIRED',
   'APPROVED',
+  'SHORTLISTED',
+  'SCREENING',
+  'INTERVIEW',
+  'OFFER',
+  'HIRED',
+  'REJECTED',
+  'WITHDRAWN',
   'FAILED_EXTRACTION',
   'FAILED_AI'
 ]);
@@ -43,6 +50,20 @@ export const UpdateProfileSchema = z.object({
   email: z.string().email('Invalid email').nullable().optional(),
   phone: z.string().max(50).nullable().optional(),
   summary: z.string().nullable().optional(),
+  status: z.enum([
+    'APPROVED',
+    'SHORTLISTED',
+    'SCREENING',
+    'INTERVIEW',
+    'OFFER',
+    'HIRED',
+    'REJECTED',
+    'WITHDRAWN'
+  ]).optional(),
+  jobId: z.string().uuid().optional(),
+  reason: z.string().max(255).optional(),
+  notes: z.string().optional(),
+  expectedPreviousStatus: z.string().optional(),
   skills: z.array(z.object({
     name: z.string(),
     excerpt: z.string()
@@ -62,3 +83,31 @@ export const UpdateProfileSchema = z.object({
 });
 
 export type UpdateProfilePayload = z.infer<typeof UpdateProfileSchema>;
+
+// Strict state transition machine definition
+const CANDIDATE_TRANSITION_MAP: Record<string, string[]> = {
+  REVIEW_REQUIRED: ['APPROVED', 'REJECTED'],
+  APPROVED: ['SHORTLISTED', 'REJECTED', 'WITHDRAWN'],
+  SHORTLISTED: ['SCREENING', 'APPROVED', 'REJECTED', 'WITHDRAWN'],
+  SCREENING: ['INTERVIEW', 'SHORTLISTED', 'REJECTED', 'WITHDRAWN'],
+  INTERVIEW: ['OFFER', 'SCREENING', 'REJECTED', 'WITHDRAWN'],
+  OFFER: ['HIRED', 'INTERVIEW', 'REJECTED', 'WITHDRAWN'],
+  HIRED: ['OFFER', 'WITHDRAWN'],
+  REJECTED: ['APPROVED', 'SHORTLISTED', 'SCREENING', 'INTERVIEW', 'OFFER'], // allow undoing rejection
+  WITHDRAWN: ['APPROVED', 'SHORTLISTED', 'SCREENING', 'INTERVIEW', 'OFFER'], // allow undoing withdrawal
+};
+
+export function isValidCandidateTransition(current: string, next: string): boolean {
+  if (current === next) return true;
+
+  const allowed = CANDIDATE_TRANSITION_MAP[current];
+  if (allowed && allowed.includes(next)) return true;
+
+  // Background worker automated flows
+  if (current === 'UPLOADED' && ['QUEUED', 'PROCESSING', 'FAILED_EXTRACTION'].includes(next)) return true;
+  if (current === 'QUEUED' && ['PROCESSING', 'FAILED_EXTRACTION'].includes(next)) return true;
+  if (current === 'PROCESSING' && ['AI_PROCESSING', 'FAILED_EXTRACTION'].includes(next)) return true;
+  if (current === 'AI_PROCESSING' && ['REVIEW_REQUIRED', 'APPROVED', 'FAILED_AI'].includes(next)) return true;
+
+  return false;
+}

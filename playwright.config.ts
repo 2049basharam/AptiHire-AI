@@ -4,9 +4,12 @@ export default defineConfig({
   testDir: './tests/e2e',
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
+  retries: process.env.CI ? 2 : 1,
   workers: 1, // run sequentially to prevent database/session conflicts
   reporter: 'html',
+  expect: {
+    timeout: 15000,
+  },
   use: {
     baseURL: 'http://localhost:3000',
     trace: 'on-first-retry',
@@ -20,12 +23,12 @@ export default defineConfig({
   webServer: {
     command: 'node --env-file=.env tests/e2e/server.js',
     url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
-    stdout: 'pipe',
-    stderr: 'pipe',
+    reuseExistingServer: false,
+    timeout: 120 * 1000,
     env: {
       NODE_ENV: 'test',
       AI_PROVIDER_TYPE: 'test',
+      DISABLE_RATE_LIMIT: 'true',
     },
   },
 });

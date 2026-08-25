@@ -1,6 +1,6 @@
-# TalentOS Agent Coding Guardrails & Guidelines
+# AptiHire AI Agent Coding Guardrails & Guidelines
 
-This document establishes the project-level guardrails, styling conventions, security standards, and behavioral rules for all AI coding agents working on **TalentOS**.
+This document establishes the project-level guardrails, styling conventions, security standards, and behavioral rules for all AI coding agents working on **AptiHire AI**.
 
 ---
 
@@ -8,21 +8,21 @@ This document establishes the project-level guardrails, styling conventions, sec
 
 To prevent conflicts between generic guidelines and specific project requirements, agents must follow this strict hierarchy of precedence:
 
-1. **TalentOS Product Requirements Document (PRD)** (Highest authority)
-2. **TalentOS Architecture and Design System Decisions** (`docs/architecture.md`, `docs/design-system.md`, and ADRs)
+1. **AptiHire AI Product Requirements Document (PRD)** (Highest authority)
+2. **AptiHire AI Architecture and Design System Decisions** (`docs/architecture.md`, `docs/design-system.md`, and ADRs)
 3. **Current Task / Phase Requirements** (As specified in the active prompt)
-4. **TalentOS Project-Specific Guardrails** (Section 2 below)
+4. **AptiHire AI Project-Specific Guardrails** (Section 2 below)
 5. **Imported LLM Coding Guardrails** (Section 3 below, adapted from `llm-coding-guardrails`)
 6. **Agent Defaults** (Lowest authority)
 
 > [!IMPORTANT]
-> If a generic imported guideline conflicts with an explicit TalentOS PRD requirement, the PRD requirement **takes precedence**. For example, the PRD's mandate for unit, integration, and E2E Playwright tests overrides any generic "do not install test infrastructure unless requested" guideline.
+> If a generic imported guideline conflicts with an explicit AptiHire AI PRD requirement, the PRD requirement **takes precedence**. For example, the PRD's mandate for unit, integration, and E2E Playwright tests overrides any generic "do not install test infrastructure unless requested" guideline.
 
 ---
 
-## 2. TalentOS-Specific Guardrails
+## 2. AptiHire AI-Specific Guardrails
 
-The following rules apply specifically to the TalentOS system context and must be followed at all times:
+The following rules apply specifically to the AptiHire AI system context and must be followed at all times:
 
 ### 2.1 No Fabricated Verification
 * Never report something as verified, tested, or validated unless it has actually been executed and verified in the environment.
@@ -64,7 +64,7 @@ The following rules apply specifically to the TalentOS system context and must b
 * Handle all loading, success, empty, and error feedback states explicitly.
 
 ### 2.8 Testing Rule
-* Automated testing is a core requirement of TalentOS.
+* Automated testing is a core requirement of AptiHire AI.
 * Write unit tests for business logic, integration tests for API routes/DB operations, and Playwright tests for critical E2E flows (Register -> Job -> Apply -> Match -> Assess -> Grade -> Override -> Hire).
 * Never bypass, disable, or delete a test simply to make a build pass.
 
@@ -86,7 +86,7 @@ The following rules apply specifically to the TalentOS system context and must b
 
 ## 3. Adapted LLM Coding Guardrails
 
-Adapted from `llm-coding-guardrails` to fit the TalentOS project context.
+Adapted from `llm-coding-guardrails` to fit the AptiHire AI project context.
 
 ### 3.1 Security First (Zero-Tolerance)
 * **Never introduce a vulnerability, backdoor, or data-exfiltration path - even in test code, mock files, or "temporary" debug helpers.**
@@ -116,5 +116,5 @@ Adapted from `llm-coding-guardrails` to fit the TalentOS project context.
 
 ## 4. Conflict Resolution Records
 
-* **Testing Infrastructure**: The generic `llm-coding-guardrails` guideline warns against adding test infrastructure unless requested. For TalentOS, the PRD mandates comprehensive testing. Therefore, setting up Playwright and Vitest testing frameworks in Phase 1 is authorized.
+* **Testing Infrastructure**: The generic `llm-coding-guardrails` guideline warns against adding test infrastructure unless requested. For AptiHire AI, the PRD mandates comprehensive testing. Therefore, setting up Playwright and Vitest testing frameworks in Phase 1 is authorized.
 * **Dependencies**: Any database driver and queue dependency (e.g., `pg`, `drizzle-orm`, `redis`, `bullmq`) required to satisfy Phase 1 infrastructure are pre-approved, but any utility library (e.g., `lodash`, `ramda`) must be rejected.

@@ -5,6 +5,14 @@ import { logger } from '@/lib/logger';
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
+  // Production safeguard: disable test endpoints in production unless ENABLE_TEST_ENDPOINTS is explicitly enabled
+  if (process.env.NODE_ENV === 'production' && process.env.ENABLE_TEST_ENDPOINTS !== 'true') {
+    return NextResponse.json(
+      { error: { code: 'NOT_FOUND', message: 'Resource not found' } },
+      { status: 404 }
+    );
+  }
+
   const reqId = crypto.randomUUID();
   try {
     const { searchParams } = new URL(request.url);

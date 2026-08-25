@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { db, users, memberships, eq } from '@/db';
 import { getCurrentUserId } from '@/lib/rbac';
 import LogoutButton from './LogoutButton';
+import NotificationBell from '@/components/NotificationBell';
+import AnalyticsDashboardWidgets from './AnalyticsDashboardWidgets';
 
 export const dynamic = 'force-dynamic';
 
@@ -62,16 +64,17 @@ export default async function DashboardPage() {
       <header style={{ borderBottom: '1px solid hsl(var(--border))', padding: '1rem 0', backgroundColor: 'hsl(var(--card))' }}>
         <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span style={{ fontWeight: 700, fontSize: '1.25rem' }}>TalentOS</span>
+            <span style={{ fontWeight: 700, fontSize: '1.25rem' }}>AptiHire AI</span>
             <span style={{ fontSize: '0.875rem', color: 'hsl(var(--foreground) / 0.4)' }}>/</span>
             <span style={{ fontWeight: 500, fontSize: '0.875rem', color: 'hsl(var(--foreground) / 0.8)' }}>
               {orgDetails.name}
             </span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <NotificationBell />
             <div style={{ textAlign: 'right' }}>
               <div style={{ fontSize: '0.875rem', fontWeight: 500 }}>{userDetails.name}</div>
-              <div style={{ fontSize: '0.75rem', color: 'hsl(var(--foreground) / 0.6)' }}>{userDetails.email}</div>
+              <div style={{ fontSize: '0.75rem', color: 'hsl(var(--foreground) / 0.6)' }}>{userDetails.email} ({userRole})</div>
             </div>
             <LogoutButton />
           </div>
@@ -80,39 +83,19 @@ export default async function DashboardPage() {
 
       {/* Main Content Area */}
       <main style={{ flex: 1, padding: '2rem 0' }}>
-        <div className="container" style={{ maxWidth: '800px' }}>
-          <div className="card">
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem' }}>Workspace Dashboard</h2>
-            
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
-              <div style={{ padding: '1rem', backgroundColor: 'hsl(var(--secondary))', borderRadius: 'var(--radius-md)', border: '1px solid hsl(var(--border))' }}>
-                <span style={{ display: 'block', fontSize: '0.75rem', textTransform: 'uppercase', color: 'hsl(var(--foreground) / 0.5)', fontWeight: 600 }}>
-                  Active Workspace
-                </span>
-                <span style={{ fontSize: '1.125rem', fontWeight: 600, marginTop: '0.25rem', display: 'block' }}>
-                  {orgDetails.name}
-                </span>
-                <span style={{ fontSize: '0.875rem', color: 'hsl(var(--foreground) / 0.5)' }}>
-                  Slug: {orgDetails.slug}
-                </span>
-              </div>
-
-              <div style={{ padding: '1rem', backgroundColor: 'hsl(var(--secondary))', borderRadius: 'var(--radius-md)', border: '1px solid hsl(var(--border))' }}>
-                <span style={{ display: 'block', fontSize: '0.75rem', textTransform: 'uppercase', color: 'hsl(var(--foreground) / 0.5)', fontWeight: 600 }}>
-                  Your Access Role
-                </span>
-                <span style={{ fontSize: '1.125rem', fontWeight: 600, marginTop: '0.25rem', display: 'block' }}>
-                  {userRole}
-                </span>
-                <span className="badge badge-success" style={{ marginTop: '0.25rem' }}>
-                  Verified
-                </span>
-              </div>
+        <div className="container" style={{ maxWidth: '1000px' }}>
+          <div className="card" style={{ marginBottom: '1.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 600, margin: 0 }}>Recruiter Command Center</h2>
+              <span className="badge badge-success" id="role-badge">{userRole}</span>
             </div>
+            <AnalyticsDashboardWidgets />
+          </div>
 
-            <div style={{ borderTop: '1px solid hsl(var(--border))', paddingTop: '1.5rem', marginBottom: '1.5rem' }}>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 600, marginBottom: '1rem' }}>Quick Actions</h3>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+          <div className="card">
+            <div style={{ borderTop: '1px solid hsl(var(--border))', paddingTop: '1rem' }}>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: 600, marginBottom: '1rem' }}>Quick Navigation</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
                 <Link href="/dashboard/jobs" className="card" style={{ textDecoration: 'none', display: 'block', transition: 'transform 0.2s', padding: '1rem', border: '1px solid hsl(var(--border))' }}>
                   <h4 style={{ fontWeight: 600, color: 'hsl(var(--primary))', marginBottom: '0.25rem', fontSize: '0.975rem' }}>Job Openings</h4>
                   <p style={{ fontSize: '0.875rem', color: 'hsl(var(--foreground) / 0.6)', margin: 0 }}>Create, publish, and manage job descriptions.</p>
@@ -121,14 +104,11 @@ export default async function DashboardPage() {
                   <h4 style={{ fontWeight: 600, color: 'hsl(var(--primary))', marginBottom: '0.25rem', fontSize: '0.975rem' }}>Candidates & Resumes</h4>
                   <p style={{ fontSize: '0.875rem', color: 'hsl(var(--foreground) / 0.6)', margin: 0 }}>Upload resumes, extract skills, and build profiles.</p>
                 </Link>
+                <Link href="/dashboard/search" className="card" style={{ textDecoration: 'none', display: 'block', transition: 'transform 0.2s', padding: '1rem', border: '1px solid hsl(var(--border))' }} id="quick-link-search">
+                  <h4 style={{ fontWeight: 600, color: 'hsl(var(--primary))', marginBottom: '0.25rem', fontSize: '0.975rem' }}>Candidate Discovery</h4>
+                  <p style={{ fontSize: '0.875rem', color: 'hsl(var(--foreground) / 0.6)', margin: 0 }}>Discover candidate matches using natural language query search.</p>
+                </Link>
               </div>
-            </div>
-
-            <div style={{ borderTop: '1px solid hsl(var(--border))', paddingTop: '1.5rem' }}>
-              <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem' }}>Phase 1 Foundation Successfully Completed</h3>
-              <p style={{ fontSize: '0.875rem', color: 'hsl(var(--foreground) / 0.7)', lineHeight: 1.6 }}>
-                You have successfully registered, created an organization workspace, established secure HTTP-only session cookies, and resolved role permissions directly from the database. Next phases will build on top of this secure tenant-isolated core.
-              </p>
             </div>
           </div>
         </div>

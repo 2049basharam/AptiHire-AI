@@ -4,7 +4,7 @@
 Accepted
 
 ## Context
-TalentOS relies heavily on LLM capabilities for structured data extraction, text embedding generation, assessment item generation, and answer rubric evaluation. Integrating a specific provider's SDK (e.g., raw OpenAI SDK or Google Gemini SDK) directly into multiple parts of our application codebase risks vendor lock-in. If pricing structures change, models deprecate, or rate limits are hit, swapping providers would require modifying dozens of files.
+AptiHire AI relies heavily on LLM capabilities for structured data extraction, text embedding generation, assessment item generation, and answer rubric evaluation. Integrating a specific provider's SDK (e.g., raw OpenAI SDK or Google Gemini SDK) directly into multiple parts of our application codebase risks vendor lock-in. If pricing structures change, models deprecate, or rate limits are hit, swapping providers would require modifying dozens of files.
 
 ## Decision
 We will build a centralized **AI Provider Abstraction Layer** inside a dedicated module (`src/services/ai/`). 

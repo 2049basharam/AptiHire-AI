@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { db, users, organizations, memberships, candidates, candidateDocuments, candidateProfiles, candidateEvidence, candidateEmbeddings, auditLogs, eq, and } from '../../src/db';
+import { db, users, organizations, memberships, candidates, candidateDocuments, candidateProfiles, candidateEvidence, candidateEmbeddings, auditLogs, eq, and, jobs, jobEmbeddings } from '../../src/db';
 import { cosineDistance } from 'drizzle-orm';
 
 describe('Real PostgreSQL Integration Tests: Candidate & Resume Ingestion', () => {
@@ -11,10 +11,12 @@ describe('Real PostgreSQL Integration Tests: Candidate & Resume Ingestion', () =
     // Clean all tables
     await db.delete(auditLogs);
     await db.delete(candidateEmbeddings);
+    await db.delete(jobEmbeddings);
     await db.delete(candidateEvidence);
     await db.delete(candidateProfiles);
     await db.delete(candidateDocuments);
     await db.delete(candidates);
+    await db.delete(jobs);
     await db.delete(memberships);
     await db.delete(organizations);
     await db.delete(users);
@@ -98,9 +100,9 @@ describe('Real PostgreSQL Integration Tests: Candidate & Resume Ingestion', () =
 
     expect(result).toBeDefined();
     expect(result?.firstName).toBe('Alice');
-    expect(result?.documents[0].fileName).toBe('resume.pdf');
-    expect(result?.profiles[0].skills).toContain('Python');
-    expect(result?.evidence[0].excerpt).toBe('skills in Python');
+    expect(result?.documents?.[0]?.fileName).toBe('resume.pdf');
+    expect(result?.profiles?.[0]?.skills).toContain('Python');
+    expect(result?.evidence?.[0]?.excerpt).toBe('skills in Python');
   });
 
   it('should prevent cross-tenant queries from retrieving candidate data', async () => {

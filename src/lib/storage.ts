@@ -37,6 +37,8 @@ export class LocalStorageAdapter implements FileStorage {
       throw new Error('Access denied: path traversal detected');
     }
 
+    // Ensure parent directories exist for sub-keyed files
+    await fs.promises.mkdir(path.dirname(filePath), { recursive: true });
     await fs.promises.writeFile(filePath, fileBuffer);
   }
 

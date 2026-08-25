@@ -86,7 +86,7 @@ export default function OnboardingPage() {
             <label className="form-label" htmlFor="orgSlug">Workspace URL Slug</label>
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <span style={{ fontSize: '0.875rem', color: 'hsl(var(--foreground) / 0.5)', marginRight: '0.25rem', userSelect: 'none' }}>
-                talentos.com/org/
+                aptihire.ai/org/
               </span>
               <input
                 id="orgSlug"

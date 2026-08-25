@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { addVerificationJob, startVerificationWorker, verificationQueue, queueEvents, addCandidateJob, startCandidateWorker, candidateQueue, candidateQueueEvents } from '../../src/services/queue';
-import { db, users, organizations, candidates, candidateDocuments, candidateProfiles, candidateEvidence, auditLogs, eq } from '../../src/db';
+import { db, users, organizations, candidates, candidateDocuments, candidateProfiles, candidateEvidence, auditLogs, jobs, jobEmbeddings, eq } from '../../src/db';
 import { getStorage } from '../../src/lib/storage';
 
 describe('Integration: Redis & BullMQ Infrastructure', () => {
@@ -18,6 +18,8 @@ describe('Integration: Redis & BullMQ Infrastructure', () => {
     await db.delete(candidateProfiles);
     await db.delete(candidateDocuments);
     await db.delete(candidates);
+    await db.delete(jobEmbeddings);
+    await db.delete(jobs);
     await db.delete(organizations);
     await db.delete(users);
 
@@ -73,9 +75,18 @@ describe('Integration: Redis & BullMQ Infrastructure', () => {
     const storage = getStorage();
     await storage.uploadFile(storageKey, mockPdfBuffer, 'application/pdf');
 
-    // 2. Insert candidate and document metadata in DB
+    // 2. Insert candidate and document metadata in DB (ensuring org exists)
+    let activeOrg = await db.query.organizations.findFirst({ where: eq(organizations.id, org.id) });
+    if (!activeOrg) {
+      [activeOrg] = await db.insert(organizations).values({
+        id: org.id,
+        name: 'Queue Org',
+        slug: `queue-org-${Date.now()}`,
+      }).returning();
+    }
+
     const [candidate] = await db.insert(candidates).values({
-      organizationId: org.id,
+      organizationId: activeOrg.id,
       status: 'UPLOADED'
     }).returning();
 

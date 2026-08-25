@@ -4,7 +4,7 @@
 Accepted
 
 ## Context
-TalentOS requires a database that can handle highly relational data (multi-tenancy, memberships, job descriptions, applications, candidate scores) while also supporting high-speed semantic matching between job requirements and parsed candidate resumes. We need to select a primary database and vector storage system that ensures referential integrity, strong multi-tenant boundaries, and easy query building.
+AptiHire AI requires a database that can handle highly relational data (multi-tenancy, memberships, job descriptions, applications, candidate scores) while also supporting high-speed semantic matching between job requirements and parsed candidate resumes. We need to select a primary database and vector storage system that ensures referential integrity, strong multi-tenant boundaries, and easy query building.
 
 ## Decision
 We will use **PostgreSQL** as our primary database, equipped with the **`pgvector`** extension for storing and querying vector embeddings. 

@@ -55,6 +55,6 @@ export const ExtractedProfileSchema = z.object({
 * The candidate profile only becomes trusted database truth once the recruiter clicks "Approve Candidate Profile".
 
 ## Consequences
-* Protects TalentOS from hallucinations by ensuring every extracted skill has a verifiable text snippet (provenance).
+* Protects AptiHire AI from hallucinations by ensuring every extracted skill has a verifiable text snippet (provenance).
 * Immunizes the AI extraction pipeline against resume prompt injections.
-* Complies with the TalentOS guardrail: AI is an assistant; the human recruiter remains the final authority.
+* Complies with the AptiHire AI guardrail: AI is an assistant; the human recruiter remains the final authority.

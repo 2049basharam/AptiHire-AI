@@ -1,4 +1,4 @@
-# TalentOS
+# AptiHire AI
 ## AI-Native Recruitment, Candidate Intelligence & Technical Assessment Platform
 
 **Version:** 1.0  
@@ -6,13 +6,13 @@
 **Target:** Production-quality portfolio MVP  
 **Primary implementation environment:** Antigravity  
 **Design inspiration:** Aptivision's public HR-tech/product positioning and modern AI SaaS aesthetics  
-**Product identity:** Original TalentOS branding — do not copy Aptivision assets, logos, proprietary UI, or source code.
+**Product identity:** Original AptiHire AI branding — do not copy Aptivision assets, logos, proprietary UI, or source code.
 
 ---
 
 # 1. Executive Summary
 
-TalentOS is a production-oriented, multi-tenant HR-tech platform that helps recruiters move from job creation to candidate evaluation through an explainable AI workflow.
+AptiHire AI is a production-oriented, multi-tenant HR-tech platform that helps recruiters move from job creation to candidate evaluation through an explainable AI workflow.
 
 The platform should demonstrate the ability to build a complete 0→1 SaaS product involving:
 
@@ -246,7 +246,7 @@ organization_id
 
 # 8. AI Job Analyzer
 
-When a recruiter creates a job, TalentOS should extract structured requirements.
+When a recruiter creates a job, AptiHire AI should extract structured requirements.
 
 Example:
 
@@ -781,7 +781,7 @@ Do not immediately generate pages before establishing the design system.
 
 # 25. Aptivision-Inspired Visual Direction
 
-TalentOS should take **inspiration** from Aptivision's public positioning as an AI-driven HR-tech/product company.
+AptiHire AI should take **inspiration** from Aptivision's public positioning as an AI-driven HR-tech/product company.
 
 Do NOT copy:
 
@@ -806,7 +806,7 @@ Data-oriented
 Trustworthy
 ```
 
-TalentOS must have its own identity.
+AptiHire AI must have its own identity.
 
 Suggested visual direction:
 
@@ -1384,7 +1384,7 @@ Use a clean structure.
 Example:
 
 ```text
-talentos/
+aptihire/
 ├── apps/
 │   ├── web/
 │   └── api/
@@ -1873,7 +1873,7 @@ Does the production build actually work?
 
 The final project should be presented as:
 
-## TalentOS
+## AptiHire AI
 
 **AI-Native Recruitment & Technical Assessment Platform**
 

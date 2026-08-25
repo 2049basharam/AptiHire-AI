@@ -4,10 +4,10 @@
 Accepted
 
 ## Context
-TalentOS requires strict logical boundaries between its core service domains: Authentication, Multi-tenant Isolation, Job Management, Candidate Management, Technical Assessment, and AI Processing. We need to select a deployment and repository architecture that allows the product to scale while maintaining high developer velocity, ease of continuous deployment, and simple local testability.
+AptiHire AI requires strict logical boundaries between its core service domains: Authentication, Multi-tenant Isolation, Job Management, Candidate Management, Technical Assessment, and AI Processing. We need to select a deployment and repository architecture that allows the product to scale while maintaining high developer velocity, ease of continuous deployment, and simple local testability.
 
 ## Decision
-We will build TalentOS as a **Modular Monolith** within a single Next.js monorepo. 
+We will build AptiHire AI as a **Modular Monolith** within a single Next.js monorepo. 
 
 All logical modules (e.g., job processing, candidate search, AI generation) will be organized into clean directories inside a unified codebase, sharing a single database instances and configuration files. Next.js App Router Route Handlers will serve as the API endpoints for these modules.
 

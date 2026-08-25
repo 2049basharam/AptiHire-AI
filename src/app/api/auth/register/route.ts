@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { db, users, eq } from '@/db';
 import { hashPassword } from '@/lib/auth';
 import { logger } from '@/lib/logger';
+import { checkRateLimit, buildRateLimit429Response, getClientIp } from '@/lib/ratelimit';
 import { z } from 'zod';
 
 const registerSchema = z.object({
@@ -13,6 +14,14 @@ const registerSchema = z.object({
 export async function POST(request: Request) {
   const reqId = crypto.randomUUID();
   try {
+    // Rate limit check by IP
+    const clientIp = getClientIp(request);
+    const rateLimit = await checkRateLimit('AUTH', clientIp);
+    if (!rateLimit.success) {
+      logger.warn(`Rate limit exceeded for registration attempt from IP: ${clientIp}`, reqId);
+      return buildRateLimit429Response(rateLimit);
+    }
+
     const body = await request.json();
     const result = registerSchema.safeParse(body);
 

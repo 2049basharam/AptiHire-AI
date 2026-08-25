@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'TalentOS',
-  description: 'AI-Native Recruitment & Technical Assessment Platform',
+  title: 'AptiHire AI',
+  description: 'Intelligent hiring, grounded in evidence.',
 };
 
 export default function RootLayout({

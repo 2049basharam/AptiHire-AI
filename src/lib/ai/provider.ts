@@ -1,11 +1,55 @@
 import { JobRequirements } from '../validations/job';
 import { ExtractedProfile } from '../validations/candidate';
+import { CandidateSearchIntent } from '../validations/search';
 import { GeminiAdapter } from './gemini';
+
+export interface MatchScoreBreakdown {
+  finalScore: number;
+  semanticScore: number;
+  requiredSkillsScore: number;
+  preferredSkillsScore: number;
+  experienceScore: number;
+  experienceStatus: string;
+  candidateYears: number;
+  matchedSkills: string[];
+  missingSkills: string[];
+  matchedPreferred: string[];
+  missingPreferred: string[];
+  skillGroundingMap: Record<string, string>;
+}
 
 export interface AIProvider {
   extractJobRequirements(description: string): Promise<JobRequirements>;
   extractCandidateProfile(resumeText: string): Promise<ExtractedProfile>;
   generateEmbedding(text: string): Promise<number[]>;
+  generateMatchExplanation(
+    jobTitle: string,
+    jobRequirements: JobRequirements,
+    candidateName: string,
+    candidateProfile: ExtractedProfile,
+    deterministicScoreBreakdown: MatchScoreBreakdown
+  ): Promise<{
+    strongMatchesReason: string;
+    gapsReason: string;
+    overallReason: string;
+  }>;
+  parseCandidateSearchIntent(query: string): Promise<CandidateSearchIntent>;
+  generateCandidateComparisonSummary(
+    jobTitle: string,
+    jobRequirements: JobRequirements,
+    candidatesData: Array<{
+      name: string;
+      finalScore: number;
+      semanticScore: number;
+      requiredSkillsScore: number;
+      preferredSkillsScore: number;
+      experienceScore: number;
+      confirmedSkills: string[];
+      notFoundSkills: string[];
+      experienceYears: number;
+      experienceAlignment: string;
+    }>
+  ): Promise<string>;
 }
 
 /**
@@ -91,7 +135,7 @@ export class TestAIProvider implements AIProvider {
           {
             role: 'Backend Engineer',
             company: 'TechCorp',
-            startDate: '2021-06',
+            startDate: '2019-06',
             endDate: '2024-02',
             description: 'Owned data storage layers, configured Redis queues, and optimized DB operations.'
           }
@@ -137,6 +181,62 @@ export class TestAIProvider implements AIProvider {
       vector[i] = Math.abs((Math.sin(hash + i) * 10) % 1);
     }
     return vector;
+  }
+
+  async generateMatchExplanation(
+    jobTitle: string,
+    jobRequirements: JobRequirements,
+    candidateName: string,
+    candidateProfile: ExtractedProfile,
+    deterministicScoreBreakdown: MatchScoreBreakdown
+  ): Promise<{
+    strongMatchesReason: string;
+    gapsReason: string;
+    overallReason: string;
+  }> {
+    return {
+      strongMatchesReason: `Test strong matches for candidate ${candidateName} against job "${jobTitle}".`,
+      gapsReason: `Test gaps identified for candidate ${candidateName}.`,
+      overallReason: `Test overall reasoning: Candidate score is ${deterministicScoreBreakdown.finalScore}% based on test matching rules.`
+    };
+  }
+
+  async parseCandidateSearchIntent(query: string): Promise<CandidateSearchIntent> {
+    const trimmed = query.trim().toLowerCase();
+    if (trimmed.includes('python') || trimmed.includes('fastapi')) {
+      return {
+        query: query,
+        requiredSkills: ['Python', 'FastAPI'],
+        preferredSkills: ['PostgreSQL'],
+        minimumExperienceYears: 3,
+        experienceLevel: 'MID',
+        limit: 20,
+      };
+    }
+    return {
+      query: query,
+      limit: 20,
+    };
+  }
+
+  async generateCandidateComparisonSummary(
+    jobTitle: string,
+    jobRequirements: JobRequirements,
+    candidatesData: Array<{
+      name: string;
+      finalScore: number;
+      semanticScore: number;
+      requiredSkillsScore: number;
+      preferredSkillsScore: number;
+      experienceScore: number;
+      confirmedSkills: string[];
+      notFoundSkills: string[];
+      experienceYears: number;
+      experienceAlignment: string;
+    }>
+  ): Promise<string> {
+    const summary = candidatesData.map(c => `${c.name} matches at ${c.finalScore}% with ${c.experienceYears} years of experience (${c.experienceAlignment}).`).join(' ');
+    return `AI comparison summary for job "${jobTitle}": ${summary}`;
   }
 }
 

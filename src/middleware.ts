@@ -2,10 +2,13 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import * as jose from 'jose';
 
-// TextEncoder for decoding secret bytes in the Edge runtime
-const JWT_SECRET_BYTES = new TextEncoder().encode(
-  process.env.JWT_SECRET || 'cc7e0d44fd473002f1c42167459001140ec6389b7353f8088f4d9a95f2f596f2'
-);
+function getJwtSecretBytes(): Uint8Array {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error('JWT_SECRET environment variable is missing and required.');
+  }
+  return new TextEncoder().encode(secret);
+}
 
 const PROTECTED_ROUTES = ['/dashboard', '/onboarding'];
 const AUTH_ROUTES = ['/login', '/register'];
@@ -22,10 +25,11 @@ export async function middleware(request: NextRequest) {
   if (sessionCookie) {
     try {
       // Edge-compatible verification using jose
-      await jose.jwtVerify(sessionCookie, JWT_SECRET_BYTES);
+      const secretBytes = getJwtSecretBytes();
+      await jose.jwtVerify(sessionCookie, secretBytes);
       isAuthenticated = true;
     } catch {
-      // Token invalid or expired
+      // Token invalid, expired, or secret missing
       isAuthenticated = false;
     }
   }

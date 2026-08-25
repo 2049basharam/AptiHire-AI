@@ -1,6 +1,6 @@
-# TalentOS Design System
+# AptiHire AI Design System
 
-This design system establishes the visual identity, UI tokens, accessible patterns, and responsive component library for TalentOS. It is built to present a professional, data-dense, and highly readable interface that feels premium and credible.
+This design system establishes the visual identity, UI tokens, accessible patterns, and responsive component library for AptiHire AI. It is built to present a professional, data-dense, and highly readable interface that feels premium and credible.
 
 ---
 
@@ -103,7 +103,7 @@ A consistent 4px (0.25rem) increment system:
 
 ## 3. Layout & Density
 
-To optimize information architecture for recruiters scanning dozens of resumes, TalentOS utilizes a high-density dashboard design.
+To optimize information architecture for recruiters scanning dozens of resumes, AptiHire AI utilizes a high-density dashboard design.
 * **Max Width**: Grid container width capped at `1440px`.
 * **Sidebar Layout**: A fixed left navigation panel (width: `240px`) with collapsible mobile support.
 * **Component Padding**: Standard card internal padding is `1rem` (16px). Table cell padding is `0.5rem 1rem`.

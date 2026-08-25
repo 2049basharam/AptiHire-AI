@@ -1,13 +1,15 @@
 import { NextResponse } from 'next/server';
-import { db, jobs, auditLogs, memberships, eq, and } from '@/db';
+import { db, jobs, auditLogs, memberships, jobEmbeddings, eq, and } from '@/db';
 import { getCurrentUserId, requireRole } from '@/lib/rbac';
 import { verifyCSRF } from '@/lib/csrf';
 import { logger } from '@/lib/logger';
+import { getAIProvider } from '@/lib/ai/provider';
 import {
   updateJobSchema,
   isValidStatusTransition,
   canPublishJob,
   JobStatus,
+  JobRequirements,
 } from '@/lib/validations/job';
 
 export const dynamic = 'force-dynamic';
@@ -206,6 +208,37 @@ export async function PATCH(
     });
 
     logger.info(`Job ${jobId} updated successfully. Action: ${updatedJob.status}`, reqId);
+
+    // 9. Generate or update job embedding if published
+    if (updatedJob.status === 'PUBLISHED') {
+      const requirements = updatedJob.requirements as JobRequirements | null;
+      const skills = Array.isArray(requirements?.skills)
+        ? requirements.skills.join(', ')
+        : '';
+      const denseSummary = `Title: ${updatedJob.title}\nDescription: ${updatedJob.description}\nRequired Skills: ${skills}`;
+
+      const aiProvider = getAIProvider();
+      if (aiProvider) {
+        try {
+          const vectorValues = await aiProvider.generateEmbedding(denseSummary);
+          await db.transaction(async (tx) => {
+            await tx.delete(jobEmbeddings).where(eq(jobEmbeddings.jobId, jobId));
+            await tx.insert(jobEmbeddings).values({
+              jobId,
+              organizationId: orgId,
+              embedding: vectorValues,
+              model: 'text-embedding-004',
+              version: '1.0',
+            });
+          });
+          logger.info(`Job embedding generated and stored successfully for job ${jobId}`, reqId);
+        } catch (embedError: unknown) {
+          const errMsg = embedError instanceof Error ? embedError.message : String(embedError);
+          logger.warn(`Failed to generate job embedding for job ${jobId}`, reqId, { error: errMsg });
+        }
+      }
+    }
+
     return NextResponse.json(updatedJob);
   } catch (error: unknown) {
     const errMessage = error instanceof Error ? error.message : String(error);

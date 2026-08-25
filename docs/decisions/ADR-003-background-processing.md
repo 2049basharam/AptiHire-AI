@@ -4,7 +4,7 @@
 Accepted
 
 ## Context
-TalentOS performs several heavy, resource-intensive operations that can take anywhere from 5 seconds to 2 minutes:
+AptiHire AI performs several heavy, resource-intensive operations that can take anywhere from 5 seconds to 2 minutes:
 1. Parsing uploaded resumes (extracting text from PDFs/DOCX and converting it to structured profiles using LLMs).
 2. Generating embedding vectors for candidates and jobs.
 3. Automatically generating technical assessment question banks based on job requirements.

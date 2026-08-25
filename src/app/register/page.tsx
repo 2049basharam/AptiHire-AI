@@ -45,7 +45,7 @@ export default function RegisterPage() {
       <div className="card" style={{ width: '100%', maxWidth: '400px' }}>
         <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
           <h2 style={{ fontSize: '1.5rem', fontWeight: 700 }}>Create Account</h2>
-          <p style={{ fontSize: '0.875rem', color: 'hsl(var(--foreground) / 0.6)' }}>Get started with TalentOS</p>
+          <p style={{ fontSize: '0.875rem', color: 'hsl(var(--foreground) / 0.6)' }}>Get started with AptiHire AI</p>
         </div>
 
         {error && (

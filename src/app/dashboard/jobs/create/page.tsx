@@ -166,7 +166,7 @@ export default function CreateJobPage() {
       <header style={{ borderBottom: '1px solid hsl(var(--border))', padding: '1rem 0', backgroundColor: 'hsl(var(--card))' }}>
         <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ fontWeight: 700, fontSize: '1.25rem' }}>
-            TalentOS <span style={{ fontSize: '0.875rem', fontWeight: 500, color: 'hsl(var(--foreground) / 0.5)' }}>/ Create Job</span>
+            AptiHire AI <span style={{ fontSize: '0.875rem', fontWeight: 500, color: 'hsl(var(--foreground) / 0.5)' }}>/ Create Job</span>
           </div>
           <Link href="/dashboard/jobs" className="btn btn-secondary" style={{ fontSize: '0.875rem', padding: '0.375rem 0.75rem' }}>
             Cancel

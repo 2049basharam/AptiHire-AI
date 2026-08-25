@@ -4,7 +4,7 @@
 Accepted
 
 ## Context
-TalentOS requires a secure, production-grade authentication and session management system. It must support user registration, secure login/logout, protected routes, and strict multi-tenant isolation. 
+AptiHire AI requires a secure, production-grade authentication and session management system. It must support user registration, secure login/logout, protected routes, and strict multi-tenant isolation. 
 
 We need to decide:
 1. The framework version (Next.js 15 vs LTS).

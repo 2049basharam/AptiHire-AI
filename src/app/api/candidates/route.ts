@@ -5,6 +5,7 @@ import { verifyCSRF } from '@/lib/csrf';
 import { logger } from '@/lib/logger';
 import { getStorage, validateFileBuffer } from '@/lib/storage';
 import { addCandidateJob, startCandidateWorker } from '@/services/queue';
+import { checkRateLimit, buildRateLimit429Response } from '@/lib/ratelimit';
 import path from 'path';
 
 export const dynamic = 'force-dynamic';
@@ -117,6 +118,13 @@ export async function POST(request: Request) {
         { error: { code: 'FORBIDDEN', message: errMsg } },
         { status: 403 }
       );
+    }
+
+    // Rate limit check for document uploads
+    const rateLimit = await checkRateLimit('UPLOAD', `${orgId}:${userId}`);
+    if (!rateLimit.success) {
+      logger.warn(`Rate limit exceeded for document upload by user: ${userId} in org: ${orgId}`, reqId);
+      return buildRateLimit429Response(rateLimit);
     }
 
     // 5. Parse multipart form data

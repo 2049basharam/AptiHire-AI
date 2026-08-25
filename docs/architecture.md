@@ -1,12 +1,12 @@
-# TalentOS Architecture & System Design
+# AptiHire AI Architecture & System Design
 
-This document specifies the technical architecture, data model, AI reliability model, and information architecture for TalentOS.
+This document specifies the technical architecture, data model, AI reliability model, and information architecture for AptiHire AI.
 
 ---
 
 ## 1. High-Level Architecture (Modular Monolith)
 
-TalentOS is architected as a **Modular Monolith** built on top of Next.js. This guarantees low operational complexity, high local testing fidelity, and clean compile-time boundary enforcement between logical domains.
+AptiHire AI is architected as a **Modular Monolith** built on top of Next.js. This guarantees low operational complexity, high local testing fidelity, and clean compile-time boundary enforcement between logical domains.
 
 ```text
                   ┌──────────────────────────────┐

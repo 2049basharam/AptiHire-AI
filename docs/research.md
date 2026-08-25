@@ -1,6 +1,6 @@
-# TalentOS Research Report
+# AptiHire AI Research Report
 
-This document outlines the findings from our market research (specifically Aptivision Technologies), technology stack verification using Context7, and architectural decisions for TalentOS.
+This document outlines the findings from our market research (specifically Aptivision Technologies), technology stack verification using Context7, and architectural decisions for AptiHire AI.
 
 ---
 
@@ -16,10 +16,10 @@ We researched the publicly available information for Aptivision Technologies (th
   * **Database & Search**: PostgreSQL, Drizzle ORM, pgvector, and OpenAI API integrations for semantic vector matching.
 * **Recruitment Workflows**: Scalable multi-tenant SaaS architectures, continuous integration/continuous deployment (CI/CD) pipelines, and rigorous unit/integration testing suites.
 
-### TalentOS Design Decision / Assumption (Original System Layout)
-* **Monolith vs. Microservices**: While Aptivision leans serverless, TalentOS will be implemented as a **Modular Monolith** in a single Next.js monorepo to reduce deployment complexity while maintaining clear boundary definitions between the Auth, Job Management, Assessment, and AI services.
+### AptiHire AI Design Decision / Assumption (Original System Layout)
+* **Monolith vs. Microservices**: While Aptivision leans serverless, AptiHire AI will be implemented as a **Modular Monolith** in a single Next.js monorepo to reduce deployment complexity while maintaining clear boundary definitions between the Auth, Job Management, Assessment, and AI services.
 * **ORM & Database**: We will use **Drizzle ORM** over Prisma to access PostgreSQL. Drizzle provides native, high-performance support for `pgvector` operators and outputs SQL queries that are simpler to optimize for high-density recruiter dashboards.
-* **Background Jobs**: TalentOS will use **BullMQ** with Redis for resume parsing and assessment generation. Since LLM calls and file processing can exceed the 10-second serverless execution limits, asynchronous background queues are a hard production requirement.
+* **Background Jobs**: AptiHire AI will use **BullMQ** with Redis for resume parsing and assessment generation. Since LLM calls and file processing can exceed the 10-second serverless execution limits, asynchronous background queues are a hard production requirement.
 
 ---
 
