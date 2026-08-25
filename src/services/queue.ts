@@ -26,14 +26,42 @@ export function createRedisConnection(overrides?: RedisOptions): IORedis {
   return client;
 }
 
-// Dedicated connection instances for queues and events
-const queueConnection = createRedisConnection();
-const verificationEventsConnection = createRedisConnection();
-const candidateEventsConnection = createRedisConnection();
+// Lazy instantiation factory helper
+function createLazyProxy<T extends object>(factory: () => T): T {
+  let instance: T | null = null;
+  return new Proxy({} as T, {
+    get(target, prop, receiver) {
+      if (!instance) {
+        instance = factory();
+      }
+      return Reflect.get(instance, prop, receiver);
+    },
+  });
+}
 
-// Configure Queue for infrastructure verification
-export const verificationQueue = new Queue('verification-queue', {
-  connection: queueConnection,
+// Dedicated connection instances (lazily created on demand)
+let queueConnection: IORedis | null = null;
+let verificationEventsConnection: IORedis | null = null;
+let candidateEventsConnection: IORedis | null = null;
+
+const getQueueConnection = () => {
+  if (!queueConnection) queueConnection = createRedisConnection();
+  return queueConnection;
+};
+
+const getVerificationEventsConnection = () => {
+  if (!verificationEventsConnection) verificationEventsConnection = createRedisConnection();
+  return verificationEventsConnection;
+};
+
+const getCandidateEventsConnection = () => {
+  if (!candidateEventsConnection) candidateEventsConnection = createRedisConnection();
+  return candidateEventsConnection;
+};
+
+// Configure Queue for infrastructure verification (lazy Proxy)
+export const verificationQueue = createLazyProxy(() => new Queue('verification-queue', {
+  connection: getQueueConnection(),
   defaultJobOptions: {
     attempts: 3,
     backoff: {
@@ -41,13 +69,13 @@ export const verificationQueue = new Queue('verification-queue', {
       delay: 1000,
     },
   },
-});
+}));
 
-export const queueEvents = new QueueEvents('verification-queue', { connection: verificationEventsConnection });
+export const queueEvents = createLazyProxy(() => new QueueEvents('verification-queue', { connection: getVerificationEventsConnection() }));
 
-// Configure Queue for Candidate Resume processing
-export const candidateQueue = new Queue('candidate-processing-queue', {
-  connection: queueConnection,
+// Configure Queue for Candidate Resume processing (lazy Proxy)
+export const candidateQueue = createLazyProxy(() => new Queue('candidate-processing-queue', {
+  connection: getQueueConnection(),
   defaultJobOptions: {
     attempts: 3,
     backoff: {
@@ -55,9 +83,9 @@ export const candidateQueue = new Queue('candidate-processing-queue', {
       delay: 1000,
     },
   },
-});
+}));
 
-export const candidateQueueEvents = new QueueEvents('candidate-processing-queue', { connection: candidateEventsConnection });
+export const candidateQueueEvents = createLazyProxy(() => new QueueEvents('candidate-processing-queue', { connection: getCandidateEventsConnection() }));
 
 // Configure Workers
 let verificationWorker: Worker | null = null;
