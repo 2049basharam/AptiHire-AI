@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const envSchema = z.object({
   DATABASE_URL: z.string().url("DATABASE_URL must be a valid connection URL"),
-  REDIS_URL: z.string().url("REDIS_URL must be a valid connection URL"),
+  REDIS_URL: z.string().url("REDIS_URL must be a valid connection URL").default("redis://127.0.0.1:6379"),
   JWT_SECRET: z.string().min(32, "JWT_SECRET must be at least 32 characters long"),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   DISABLE_RATE_LIMIT: z.string().optional(),
