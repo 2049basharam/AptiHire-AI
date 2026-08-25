@@ -17,6 +17,8 @@
   },
   "dependencies": {
     "@google/genai": "^2.18.0",
+    "@supabase/ssr": "^0.12.5",
+    "@supabase/supabase-js": "^2.112.4",
     "bullmq": "^5.8.5",
     "drizzle-orm": "^0.33.0",
     "ioredis": "^5.4.1",

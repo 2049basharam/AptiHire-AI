@@ -9,6 +9,8 @@ export const envSchema = z.object({
   ENABLE_TEST_ENDPOINTS: z.string().optional(),
   AI_PROVIDER_TYPE: z.enum(['gemini', 'mock', 'test']).optional().default('gemini'),
   GEMINI_API_KEY: z.string().optional(),
+  NEXT_PUBLIC_SUPABASE_URL: z.string().optional(),
+  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z.string().optional(),
 }).superRefine((data, ctx) => {
   // Production safeguard: rate limiting must never be disabled in production
   if (data.NODE_ENV === 'production' && data.DISABLE_RATE_LIMIT === 'true') {
@@ -46,6 +48,8 @@ export function validateEnv(rawEnv: Record<string, string | undefined>) {
       ENABLE_TEST_ENDPOINTS: cleanStr(rawEnv.ENABLE_TEST_ENDPOINTS),
       AI_PROVIDER_TYPE: cleanStr(rawEnv.AI_PROVIDER_TYPE) || (isTestRunner ? 'test' : undefined),
       GEMINI_API_KEY: cleanStr(rawEnv.GEMINI_API_KEY),
+      NEXT_PUBLIC_SUPABASE_URL: cleanStr(rawEnv.NEXT_PUBLIC_SUPABASE_URL),
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: cleanStr(rawEnv.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY),
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
