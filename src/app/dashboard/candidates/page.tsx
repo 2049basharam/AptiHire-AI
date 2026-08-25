@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import { FileTextIcon, SparklesIcon } from '@/components/icons';
 import { db, candidates, memberships, eq } from '@/db';
 import { getCurrentUserId } from '@/lib/rbac';
 import CandidateUploadModal from './CandidateUploadModal';
@@ -69,8 +70,8 @@ export default async function CandidatesPage() {
               </p>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <span className="badge badge-ai">
-                ⚡ Resume Intelligence Enabled
+              <span className="badge badge-ai" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                <SparklesIcon size={12} /> Resume Intelligence Enabled
               </span>
               <span className="badge badge-success">
                 {orgCandidates.length} {orgCandidates.length === 1 ? 'Candidate' : 'Candidates'}
@@ -81,7 +82,9 @@ export default async function CandidatesPage() {
           <div className="card" style={{ padding: 0, overflow: 'hidden', borderRadius: '16px', boxShadow: 'var(--shadow-md)' }}>
             {orgCandidates.length === 0 ? (
               <div style={{ padding: '4rem 2rem', textAlign: 'center' }}>
-                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📄</div>
+                <div style={{ color: 'hsl(var(--primary))', marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>
+                  <FileTextIcon size={48} />
+                </div>
                 <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem' }}>No Candidates Uploaded Yet</h3>
                 <p style={{ fontSize: '0.9rem', color: 'hsl(var(--foreground) / 0.65)', maxWidth: '440px', margin: '0 auto 1.5rem', lineHeight: 1.5 }}>
                   Upload candidate resumes to extract structured work history, technical skills, and generate evidence-based match scores.

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { FileTextIcon, TargetIcon, BarChartIcon, SparklesIcon } from '@/components/icons';
 
 export default function LandingPage() {
   return (
@@ -24,24 +25,24 @@ export default function LandingPage() {
           </nav>
         </div>
       </header>
-
+ 
       {/* Main Hero Section */}
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '4rem 0 6rem 0' }}>
         <div className="container" style={{ textAlign: 'center', maxWidth: '850px' }}>
           <div style={{ marginBottom: '1.75rem', display: 'flex', justifyContent: 'center' }}>
-            <span className="badge badge-ai" style={{ padding: '0.35rem 0.9rem', fontSize: '0.825rem', borderRadius: '20px' }}>
-              ✨ Next-Gen AI Recruiting Platform
+            <span className="badge badge-ai" style={{ padding: '0.35rem 0.9rem', fontSize: '0.825rem', borderRadius: '20px', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+              <SparklesIcon size={14} /> Next-Gen AI Recruiting Platform
             </span>
           </div>
-
+ 
           <h1 style={{ fontSize: '3.5rem', fontWeight: 800, lineHeight: 1.15, marginBottom: '1.5rem', letterSpacing: '-0.03em', background: 'linear-gradient(180deg, hsl(var(--foreground)) 0%, rgba(15, 23, 42, 0.75) 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
             Intelligent hiring, grounded in evidence.
           </h1>
-
+ 
           <p style={{ fontSize: '1.25rem', color: 'hsl(var(--foreground) / 0.75)', marginBottom: '2.5rem', lineHeight: 1.6, maxWidth: '720px', margin: '0 auto 2.5rem auto' }}>
             Secure candidate ingestion, AI-powered resume intelligence, deterministic scoring, recruiter controls, and real-time funnel analytics.
           </p>
-
+ 
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginBottom: '4rem' }}>
             <Link href="/register" className="btn btn-primary" style={{ padding: '0.85rem 2rem', fontSize: '1.05rem', borderRadius: '10px' }}>
               Start Hiring Free →
@@ -50,27 +51,33 @@ export default function LandingPage() {
               View Interactive Demo
             </Link>
           </div>
-
+ 
           {/* Interactive Feature Cards Matrix */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem', textAlign: 'left' }}>
             <div className="card card-interactive" style={{ padding: '1.5rem', borderRadius: '14px' }}>
-              <div style={{ fontSize: '1.5rem', marginBottom: '0.75rem' }}>📄</div>
+              <div style={{ color: 'hsl(var(--primary))', marginBottom: '0.75rem' }}>
+                <FileTextIcon size={24} />
+              </div>
               <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.4rem' }}>Resume Intelligence</h3>
               <p style={{ fontSize: '0.875rem', color: 'hsl(var(--foreground) / 0.7)', lineHeight: 1.5 }}>
                 Automated PDF parsing with magic-byte security and structured skill extraction.
               </p>
             </div>
-
+ 
             <div className="card card-interactive" style={{ padding: '1.5rem', borderRadius: '14px' }}>
-              <div style={{ fontSize: '1.5rem', marginBottom: '0.75rem' }}>🎯</div>
+              <div style={{ color: 'hsl(var(--primary))', marginBottom: '0.75rem' }}>
+                <TargetIcon size={24} />
+              </div>
               <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.4rem' }}>Semantic Matching</h3>
               <p style={{ fontSize: '0.875rem', color: 'hsl(var(--foreground) / 0.7)', lineHeight: 1.5 }}>
                 Deterministic cosine similarity matching isolated from LLM output hallucination.
               </p>
             </div>
-
+ 
             <div className="card card-interactive" style={{ padding: '1.5rem', borderRadius: '14px' }}>
-              <div style={{ fontSize: '1.5rem', marginBottom: '0.75rem' }}>📊</div>
+              <div style={{ color: 'hsl(var(--primary))', marginBottom: '0.75rem' }}>
+                <BarChartIcon size={24} />
+              </div>
               <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.4rem' }}>Funnel Analytics</h3>
               <p style={{ fontSize: '0.875rem', color: 'hsl(var(--foreground) / 0.7)', lineHeight: 1.5 }}>
                 Real-time conversion tracking, recruiter activity streams, and time-in-stage insights.
@@ -79,7 +86,7 @@ export default function LandingPage() {
           </div>
         </div>
       </main>
-
+ 
       {/* Footer */}
       <footer style={{ borderTop: '1px solid hsl(var(--border))', padding: '2rem 0', backgroundColor: 'hsl(var(--card))', textAlign: 'center', fontSize: '0.875rem', color: 'hsl(var(--foreground) / 0.6)' }}>
         <div className="container">

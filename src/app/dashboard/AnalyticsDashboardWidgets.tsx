@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { SparklesIcon, AlertTriangleIcon } from '@/components/icons';
 
 export default function AnalyticsDashboardWidgets() {
   const [data, setData] = useState<Record<string, unknown> | null>(null);
@@ -36,7 +37,9 @@ export default function AnalyticsDashboardWidgets() {
   if (loading) {
     return (
       <div style={{ padding: '3rem 2rem', textAlign: 'center', color: 'hsl(var(--foreground) / 0.6)' }} id="analytics-loading-state">
-        <div className="pulse-indicator" style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>⚡</div>
+        <div className="pulse-indicator" style={{ color: 'hsl(var(--ai-accent))', marginBottom: '0.5rem', display: 'flex', justifyContent: 'center' }}>
+          <SparklesIcon size={24} />
+        </div>
         <p style={{ fontWeight: 500, fontSize: '0.95rem' }}>Loading operational analytics dashboard...</p>
       </div>
     );
@@ -45,7 +48,9 @@ export default function AnalyticsDashboardWidgets() {
   if (error || !data) {
     return (
       <div style={{ padding: '1.25rem', backgroundColor: 'rgba(239, 68, 68, 0.1)', color: 'hsl(var(--danger))', borderRadius: 'var(--radius-md)', border: '1px solid rgba(239, 68, 68, 0.2)', fontWeight: 500 }} id="analytics-error-state">
-        ⚠️ {error || 'Unable to load analytics data'}
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+          <AlertTriangleIcon size={16} /> {error || 'Unable to load analytics data'}
+        </div>
       </div>
     );
   }

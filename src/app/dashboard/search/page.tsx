@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { SearchIcon, BriefcaseIcon, SparklesIcon, HelpIcon, AlertTriangleIcon } from '@/components/icons';
 
 interface CandidateResult {
   candidate: {
@@ -225,8 +226,8 @@ function CandidateSearchInner() {
                   fontWeight: 600,
                   marginBottom: '1.25rem'
                 }} id="similarity-context-banner">
-                  <span>
-                    🔍 Finding candidate profiles similar to: <strong>{similarCandidateName || 'Loading...'}</strong>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <SearchIcon size={14} /> Finding candidate profiles similar to: <strong>{similarCandidateName || 'Loading...'}</strong>
                   </span>
                   <button 
                     type="button" 
@@ -252,8 +253,8 @@ function CandidateSearchInner() {
                   fontWeight: 600,
                   marginBottom: '1.25rem'
                 }} id="job-context-banner">
-                  <span>
-                    💼 Scoring candidates tailored to Job Context: <strong>{jobTitle || 'Loading...'}</strong>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <BriefcaseIcon size={14} /> Scoring candidates tailored to Job Context: <strong>{jobTitle || 'Loading...'}</strong>
                   </span>
                   <button 
                     type="button" 
@@ -327,7 +328,7 @@ function CandidateSearchInner() {
           {intent && (
             <div className="card" style={{ marginBottom: '1.75rem', border: '1px dashed hsl(var(--ai-accent))', backgroundColor: 'rgba(139, 92, 246, 0.04)', borderRadius: '14px', padding: '1.25rem' }} id="ai-interpretation-card">
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.85rem' }}>
-                <span style={{ fontSize: '1rem' }}>✨</span>
+                <SparklesIcon size={16} style={{ color: 'hsl(var(--ai-accent))' }} />
                 <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'hsl(var(--ai-accent))', margin: 0 }}>
                   AptiHire Extracted Intent:
                 </h3>
@@ -377,12 +378,16 @@ function CandidateSearchInner() {
           {/* Results List */}
           {isLoading ? (
             <div style={{ textAlign: 'center', padding: '4rem 0', color: 'hsl(var(--foreground) / 0.6)' }}>
-              <div className="pulse-indicator" style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>⚡</div>
+              <div className="pulse-indicator" style={{ color: 'hsl(var(--ai-accent))', marginBottom: '0.5rem', display: 'flex', justifyContent: 'center' }}>
+                <SparklesIcon size={32} />
+              </div>
               <p style={{ fontWeight: 600 }}>Searching semantic vector database...</p>
             </div>
           ) : results.length === 0 && intent ? (
             <div className="card" style={{ padding: '3.5rem 2rem', textAlign: 'center', borderRadius: '16px' }} id="search-empty-state">
-              <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔍</div>
+              <div style={{ color: 'hsl(var(--foreground) / 0.4)', marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>
+                <SearchIcon size={48} />
+              </div>
               <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem', color: 'hsl(var(--foreground))' }}>
                 No Matching Candidates Found
               </h3>
@@ -399,10 +404,18 @@ function CandidateSearchInner() {
                 gap: '0.65rem',
                 color: 'hsl(var(--foreground) / 0.8)'
               }}>
-                <li>💡 Broaden your query statement by focusing on core technical skills.</li>
-                <li>{"💡 Try searching for general role titles (e.g. \"Full Stack Developer\")."}</li>
-                <li>💡 If similarity search is active, clear the similarity constraint and search directly.</li>
-                <li>💡 Confirm candidate resumes are uploaded and approved in the Candidates workspace.</li>
+                <li style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <HelpIcon size={14} style={{ color: 'hsl(var(--primary))', flexShrink: 0 }} /> Broaden your query statement by focusing on core technical skills.
+                </li>
+                <li style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <HelpIcon size={14} style={{ color: 'hsl(var(--primary))', flexShrink: 0 }} /> {"Try searching for general role titles (e.g. \"Full Stack Developer\")."}
+                </li>
+                <li style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <HelpIcon size={14} style={{ color: 'hsl(var(--primary))', flexShrink: 0 }} /> If similarity search is active, clear the similarity constraint and search directly.
+                </li>
+                <li style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <HelpIcon size={14} style={{ color: 'hsl(var(--primary))', flexShrink: 0 }} /> Confirm candidate resumes are uploaded and approved in the Candidates workspace.
+                </li>
               </ul>
             </div>
           ) : results.length > 0 ? (

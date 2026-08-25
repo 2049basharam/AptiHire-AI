@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, use } from 'react';
+import { CheckCircleIcon } from '@/components/icons';
 
 interface Question {
   id: string;
@@ -247,7 +248,9 @@ export default function CandidateAssessmentPage({ params }: { params: Promise<{ 
     return (
       <div className="container" style={{ paddingTop: '4rem', maxWidth: '650px', textAlign: 'center' }}>
         <div className="card glass-panel" style={{ padding: '3rem' }}>
-          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>✅</div>
+          <div style={{ color: 'hsl(var(--success))', marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>
+            <CheckCircleIcon size={48} />
+          </div>
           <h2 style={{ fontSize: '1.75rem', fontWeight: 700, marginBottom: '0.75rem' }}>Assessment Submitted</h2>
           <p className="text-secondary" style={{ lineHeight: '1.6', marginBottom: '1.5rem' }}>
             Thank you, <strong>{session.candidateName}</strong>. Your technical assessment responses have been submitted successfully and sent to the hiring team for evaluation.

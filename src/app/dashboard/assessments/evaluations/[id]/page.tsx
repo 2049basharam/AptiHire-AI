@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, use } from 'react';
+import { EditIcon, AlertTriangleIcon, CpuIcon } from '@/components/icons';
 
 interface EvaluationData {
   evaluation: {
@@ -136,8 +137,8 @@ export default function RecruiterEvaluationScorecardPage({ params }: { params: P
           </p>
         </div>
 
-        <button onClick={() => setShowOverrideModal(true)} className="btn btn-secondary">
-          ✏️ Override Evaluation Score
+        <button onClick={() => setShowOverrideModal(true)} className="btn btn-secondary" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+          <EditIcon size={16} /> Override Evaluation Score
         </button>
       </div>
 
@@ -150,8 +151,8 @@ export default function RecruiterEvaluationScorecardPage({ params }: { params: P
             {data?.evaluation.finalScore ?? 85}%
           </span>
           {data?.evaluation.isOverridden && (
-            <div style={{ fontSize: '0.75rem', color: '#f59e0b', marginTop: '0.5rem' }}>
-              ⚠️ Score Overridden by Recruiter
+            <div style={{ fontSize: '0.75rem', color: '#f59e0b', marginTop: '0.5rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', justifyContent: 'center', width: '100%' }}>
+              <AlertTriangleIcon size={12} /> Score Overridden by Recruiter
             </div>
           )}
         </div>
@@ -178,7 +179,9 @@ export default function RecruiterEvaluationScorecardPage({ params }: { params: P
 
       {/* AI Qualitative Feedback Panel */}
       <div className="card glass-panel" style={{ padding: '2rem', marginBottom: '2rem' }}>
-        <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '1rem' }}>🤖 AI Qualitative Insights & Feedback</h3>
+        <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <CpuIcon size={20} style={{ color: 'hsl(var(--ai-accent))' }} /> AI Qualitative Insights & Feedback
+        </h3>
         <p style={{ lineHeight: '1.6', marginBottom: '1.5rem', color: 'var(--text-primary)' }}>
           {data?.evaluation.aiQualitativeFeedback?.summary || 'Candidate demonstrated clean algorithmic solution structure, passing 100% of objective test cases.'}
         </p>

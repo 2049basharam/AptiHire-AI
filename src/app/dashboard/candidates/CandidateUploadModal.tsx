@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { UploadIcon } from '@/components/icons';
 
 export default function CandidateUploadModal() {
   const [isOpen, setIsOpen] = useState(false);
@@ -125,7 +126,9 @@ export default function CandidateUploadModal() {
                 backgroundColor: 'hsl(var(--secondary) / 0.3)',
                 marginBottom: '1.5rem'
               }}>
-                <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📤</div>
+                <div style={{ color: 'hsl(var(--primary))', marginBottom: '0.5rem', display: 'flex', justifyContent: 'center' }}>
+                  <UploadIcon size={32} />
+                </div>
                 <p style={{ fontSize: '0.875rem', fontWeight: 500, margin: '0 0 0.25rem' }}>
                   Select PDF or Word file
                 </p>

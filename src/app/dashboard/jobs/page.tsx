@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import { BriefcaseIcon } from '@/components/icons';
 import { db, jobs, memberships, eq } from '@/db';
 import { getCurrentUserId } from '@/lib/rbac';
 
@@ -75,7 +76,9 @@ export default async function JobsPage() {
 
           {orgJobs.length === 0 ? (
             <div className="card" style={{ textAlign: 'center', padding: '4rem 2rem', borderRadius: '16px', boxShadow: 'var(--shadow-md)' }}>
-              <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>💼</div>
+              <div style={{ color: 'hsl(var(--primary))', marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>
+                <BriefcaseIcon size={48} />
+              </div>
               <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem', color: 'hsl(var(--foreground))' }}>No Active Job Openings</h3>
               <p style={{ color: 'hsl(var(--foreground) / 0.65)', marginBottom: '1.5rem', maxWidth: '440px', marginInline: 'auto', fontSize: '0.9rem', lineHeight: 1.5 }}>
                 Get started by creating your first job opening. Define requirements manually or use Gemini AI extraction for automated skill structuring.
