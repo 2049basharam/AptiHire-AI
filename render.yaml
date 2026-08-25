@@ -7,8 +7,8 @@ services:
     runtime: node
     region: oregon
     plan: starter
-    buildCommand: npm ci && npm run build
-    startCommand: node dist/services/worker-main.js
+    buildCommand: npm ci
+    startCommand: npx tsx src/services/worker-main.ts
     envVars:
       - key: NODE_ENV
         value: production
