@@ -4,7 +4,7 @@ import { getCurrentUserId, requireRole } from '@/lib/rbac';
 import { verifyCSRF } from '@/lib/csrf';
 import { logger } from '@/lib/logger';
 import { getStorage, validateFileBuffer } from '@/lib/storage';
-import { addCandidateJob, startCandidateWorker } from '@/services/queue';
+import { addCandidateJob, startCandidateWorker, parseResumeToText } from '@/services/queue';
 import { checkRateLimit, buildRateLimit429Response } from '@/lib/ratelimit';
 import path from 'path';
 
@@ -172,12 +172,12 @@ export async function POST(request: Request) {
     // 9. Extract raw text from resume in API route directly
     let rawText = '';
     try {
-      const { parseResumeToText } = require('@/services/queue');
       rawText = await parseResumeToText(fileBuffer, mimeType);
-    } catch (parseError: any) {
-      logger.error('Failed to parse resume text in API route', reqId, { error: parseError.message });
+    } catch (parseError: unknown) {
+      const errMsg = parseError instanceof Error ? parseError.message : String(parseError);
+      logger.error('Failed to parse resume text in API route', reqId, { error: errMsg });
       return NextResponse.json(
-        { error: { code: 'VALIDATION_ERROR', message: parseError.message || 'Failed to extract text from resume.' } },
+        { error: { code: 'VALIDATION_ERROR', message: errMsg || 'Failed to extract text from resume.' } },
         { status: 400 }
       );
     }
@@ -187,8 +187,9 @@ export async function POST(request: Request) {
     const storage = getStorage();
     try {
       await storage.uploadFile(secureKey, fileBuffer, mimeType);
-    } catch (storageError: any) {
-      logger.warn('Storage upload failed (non-fatal)', reqId, { error: storageError.message });
+    } catch (storageError: unknown) {
+      const errMsg = storageError instanceof Error ? storageError.message : String(storageError);
+      logger.warn('Storage upload failed (non-fatal)', reqId, { error: errMsg });
     }
 
     // 11. Execute database transaction: Candidate + Document metadata + Audit Log
