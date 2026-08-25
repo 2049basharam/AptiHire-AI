@@ -4,11 +4,19 @@ import * as schema from './schema';
 import { env } from '../lib/env';
 
 // Pool option parameters for scaling connections in serverless and test environments
+const hasSslOverride = env.DATABASE_URL.includes('supabase.co') || env.DATABASE_URL.includes('pooler.supabase.com');
+const connectionString = hasSslOverride
+  ? env.DATABASE_URL.split('?')[0]
+  : env.DATABASE_URL;
+
 const pool = new Pool({
-  connectionString: env.DATABASE_URL,
+  connectionString,
   max: 10, // Sufficient connection pool depth for test teardowns and local execution
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 10000,
+  ssl: hasSslOverride
+    ? { rejectUnauthorized: false }
+    : undefined,
 });
 
 export const db = drizzle(pool, { schema });
